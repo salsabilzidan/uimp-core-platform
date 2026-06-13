@@ -39,19 +39,21 @@
             <div class="col-md-4">
                 <div class="card card-counter bg-primary p-4 shadow-sm">
                     <h3>الكليات</h3>
-                    <p class="fs-2 fw-bold mb-0">5</p>
+                    <p class="fs-2 fw-bold mb-0">{{ $collegesCount }}</p>
                 </div>
             </div>
+            
             <div class="col-md-4">
                 <div class="card card-counter bg-success p-4 shadow-sm">
                     <h3>الأقسام العلمية</h3>
-                    <p class="fs-2 fw-bold mb-0">12</p>
+                    <p class="fs-2 fw-bold mb-0">{{ $departmentsCount }}</p>
                 </div>
             </div>
+            
             <div class="col-md-4">
-                <div class="card card-counter bg-warning p-4 shadow-sm">
-                    <h3>المعامل والمختبرات</h3>
-                    <p class="fs-2 fw-bold mb-0">8</p>
+                <div class="card card-counter bg-warning text-dark p-4 shadow-sm">
+                    <h5>أعضاء هيئة التدريس والموظفين</h5>
+                    <p class="fs-2 fw-bold mb-0">{{ $employeesCount }}</p>
                 </div>
             </div>
         </div>
