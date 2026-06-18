@@ -1,63 +1,109 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - منصة UIMP</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f8f9fa; }
-        .navbar-custom { background-color: #1e3d59; }
-        .card-counter { border: none; border-radius: 10px; color: white; }
-    </style>
-</head>
-<body>
+@extends('layouts.master')
+@section('title', 'لوحة التحكم')
+@section('page-title', 'لوحة التحكم الرئيسية')
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom p-3 shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">لوحة تحكم UIMP</a>
-            <div class="d-flex align-items-center">
-                <span class="text-white me-3">مرحباً، {{ Auth::user()->name }}</span>
-                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-sm">تسجيل الخروج</button>
-                </form>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <h2 class="fw-bold text-secondary">الاحصائيات العامة للنظام</h2>
-                <p class="text-muted">متابعة فورية للمكونات الأساسية للجامعة والمعامل</p>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card card-counter bg-primary p-4 shadow-sm">
-                    <h3>الكليات</h3>
-                    <p class="fs-2 fw-bold mb-0">{{ $collegesCount }}</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card card-counter bg-success p-4 shadow-sm">
-                    <h3>الأقسام العلمية</h3>
-                    <p class="fs-2 fw-bold mb-0">{{ $departmentsCount }}</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card card-counter bg-warning text-dark p-4 shadow-sm">
-                    <h5>أعضاء هيئة التدريس والموظفين</h5>
-                    <p class="fs-2 fw-bold mb-0">{{ $employeesCount }}</p>
-                </div>
-            </div>
+@section('content')
+<div class="row g-4">
+    <div class="col-md-12">
+        <div class="card card-custom p-4">
+            <h5 class="fw-bold mb-1" style="color: #1a2a3a;">مرحباً، {{ Auth::user()->name }}</h5>
+            <p class="text-muted small mb-0">نظرة عامة على مكونات النظام المركزي للجامعة</p>
         </div>
     </div>
+</div>
 
-</body>
-</html>
+<div class="row g-3 mt-2">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a73e8, #4a8fe7);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">الكليات</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $collegesCount }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a2a3a, #2a3a4a);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">الأقسام</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $departmentsCount }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a73e8, #4a8fe7);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">الموظفين</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $employeesCount }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a2a3a, #2a3a4a);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">الطلاب</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $studentsCount }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a73e8, #4a8fe7);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">المباني</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $buildingsCount }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a2a3a, #2a3a4a);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">القاعات</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $roomsCount }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a73e8, #4a8fe7);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">المعامل</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $laboratoriesCount }}</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1a2a3a, #2a3a4a);">
+            <h6 class="fw-bold" style="font-size: 0.85rem; opacity: 0.9;">الأنظمة الفرعية</h6>
+            <p class="fs-3 fw-bold mb-0">{{ $subsystemsCount }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-2">
+    <div class="col-md-6">
+        <div class="card card-custom p-3">
+            <h6 class="fw-bold mb-3" style="color: #1a2a3a;"><i class="bi bi-plugin"></i> الأنظمة الفرعية النشطة</h6>
+            @if($activeSubsystems->count() > 0)
+                <ul class="list-group list-group-flush">
+                    @foreach($activeSubsystems as $sub)
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            {{ $sub->name }}
+                            <span class="badge" style="background: #1a73e8;">نشط</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="text-muted small mb-0">لا توجد أنظمة فرعية نشطة حالياً</p>
+            @endif
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-custom p-3">
+            <h6 class="fw-bold mb-3" style="color: #1a2a3a;"><i class="bi bi-journal-text"></i> آخر العمليات</h6>
+            @if($recentLogs->count() > 0)
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table class="table table-sm table-borderless mb-0">
+                        @foreach($recentLogs as $log)
+                            <tr>
+                                <td class="text-muted small">{{ $log->created_at ? \Carbon\Carbon::parse($log->created_at)->format('H:i') : '—' }}</td>
+                                <td><span class="badge bg-{{ $log->action == 'CREATED' ? 'success' : ($log->action == 'UPDATED' ? 'warning' : 'danger') }}">{{ $log->action }}</span></td>
+                                <td class="small">{{ $log->user_name }}</td>
+                                <td class="small text-muted">{{ $log->table_name }}</td>
+                            </tr>
+                        @endforeach
+                    </table>
+                </div>
+            @else
+                <p class="text-muted small mb-0">لا توجد عمليات حديثة</p>
+            @endif
+        </div>
+    </div>
+</div>
+@endsection

@@ -2,26 +2,35 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable;
 
-    // تحديد الحقول المسموح بتعبئتها جمودياً لحمايتها
-    protected $fillable = ['user_id', 'department_id', 'employee_code', 'phone'];
+    protected $fillable = ['user_id', 'department_id', 'employee_code', 'phone', 'academic_rank_id'];
 
-    // العلاقة مع جدول الحسابات الأساسي Users
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // العلاقة مع جدول الأقسام العلمية
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function academicRank(): BelongsTo
+    {
+        return $this->belongsTo(AcademicRank::class);
+    }
+
+    public function history(): HasMany
+    {
+        return $this->hasMany(EmployeeHistory::class);
     }
 }

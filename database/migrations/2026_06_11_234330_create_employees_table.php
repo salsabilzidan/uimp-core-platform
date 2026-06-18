@@ -11,21 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('employees', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained()->onDelete('cascade'); // ربطه بحسابه في جدول users
-    $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null'); // القسم التابع له (إن وجد)
-    $table->string('employee_code')->unique(); // الرقم الوظيفي
-    $table->string('phone')->nullable();
-    $table->timestamps();
-});
+        Schema::create('academic_ranks', function (Blueprint $table) {
+            $table->id();
+            $table->string('name_ar');
+            $table->string('name_en');
+            $table->integer('level')->default(0);
+            $table->timestamps();
+        });
+
+        Schema::create('employees', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('academic_rank_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('employee_code')->unique();
+            $table->string('phone')->nullable();
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('employees');
+        Schema::dropIfExists('academic_ranks');
     }
 };

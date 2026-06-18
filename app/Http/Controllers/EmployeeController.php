@@ -2,134 +2,160 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Employee; 
+use App\Models\Employee;
 use App\Models\Department;
-use App\Http\Controllers\Controller;    
-use App\Models\User;       
+use App\Models\User;
+use App\Services\EventBusService;
+use App\Services\NotificationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
 
 class EmployeeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
-    {// جلب الموظفين مع بياناتهم من جدول المستخدمين والأقسام
-    $employees = Employee::with(['user', 'department'])->get();
-
-    return view('employees.index', compact('employees'));
+    {
+        $employees = Employee::with(['user', 'department'])->get();
+        return view('employees.index', compact('employees'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $departments = Department::all(); // جلب كل الأقسام ليعرضها في القائمة المنسدلة
-    return view('employees.create', compact('departments'));
+        $departments = Department::all();
+        $permissions = \App\Models\Permission::all()->groupBy('module');
+        return view('employees.create', compact('departments', 'permissions'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-        'name'            => 'required|string|max:255',
-        'email'           => 'required|string|email|max:255|unique:users,email',
-        'password'        => 'required|string|min:8',
-        'department_id'   => 'required|exists:departments,id',
-        'employee_code'   => 'required|string|max:50|unique:employees,employee_code',
-        'phone'           => 'required|string|max:20',
-    ]);
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users,email',
+            'password'      => 'required|string|min:8',
+            'department_id' => 'required|exists:departments,id',
+            'employee_code' => 'required|string|max:50|unique:employees,employee_code',
+            'phone'         => 'required|string|max:20',
+            'role'          => 'required|exists:roles,id',
+            'permissions'   => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
 
-    // أولاً: إنشاء الحساب في جدول الـ users الأساسي
-    $user = User::create([
-        'name'     => $request->name,
-        'email'    => $request->email,
-        'password' => Hash::make($request->password), // تشفير كلمة المرور للحماية
-    ]);
+        $user = User::create([
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'password'          => Hash::make($request->password),
+            'email_verified_at' => now(),
+        ]);
 
-    // ثانياً: أخذ الـ ID الخاص بالمستخدم الجديد وتخزين باقي البيانات في جدول الموظفين
-    Employee::create([
-        'user_id'       => $user->id, // الربط التلقائي
-        'department_id' => $request->department_id,
-        'employee_code' => $request->employee_code,
-        'phone'         => $request->phone,
-    ]);
+        Employee::create([
+            'user_id'       => $user->id,
+            'department_id' => $request->department_id,
+            'employee_code' => $request->employee_code,
+            'phone'         => $request->phone,
+        ]);
 
-    return redirect()->route('employees.index')->with('success', 'تم إنشاء حساب الموظف وإضافته للنظام بنجاح!');
+        $user->roles()->attach($request->role);
+
+        if ($request->has('permissions')) {
+            $user->permissions()->sync($request->permissions);
+        }
+
+        app(NotificationService::class)->send([
+            'type' => 'email',
+            'channel' => 'mail',
+            'recipient' => $user->email,
+            'subject' => 'بيانات حسابك في النظام الجامعي UIMP',
+            'body' => "مرحباً {$user->name}،\n\nتم إنشاء حسابك الوظيفي في النظام الجامعي.\nالبريد الإلكتروني: {$user->email}\n\nشكراً لانضمامك.",
+        ]);
+
+        app(EventBusService::class)->dispatch('employee.created', [
+            'employee_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'department_id' => $request->department_id,
+        ]);
+
+        return redirect()->route('employees.index')->with('success', 'تم إنشاء حساب الموظف وإضافته للنظام بنجاح!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        $employee = Employee::with(['user', 'department'])->findOrFail($id);
+        return view('employees.show', compact('employee'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $employee = Employee::with('user')->findOrFail($id);
-    $departments = Department::all(); // لجلب الأقسام لغرض الاختيار منها
-    return view('employees.edit', compact('employee', 'departments'));
+        $employee = Employee::with('user', 'user.roles', 'user.permissions')->findOrFail($id);
+        $departments = Department::all();
+        $permissions = \App\Models\Permission::all()->groupBy('module');
+        $roles = \App\Models\Role::all();
+        return view('employees.edit', compact('employee', 'departments', 'permissions', 'roles'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $employee = Employee::findOrFail($id);
-    $user = $employee->user;
+        $user = $employee->user;
 
-    // التحقق من البيانات مع استثناء الحساب الحالي من شروط الـ Unique
-    $request->validate([
-        'name'            => 'required|string|max:255',
-        'email'           => 'required|string|email|max:255|unique:users,email,' . $user->id,
-        'password'        => 'nullable|string|min:8', // nullable تعني اختياري
-        'department_id'   => 'required|exists:departments,id',
-        'employee_code'   => 'required|string|max:50|unique:employees,employee_code,' . $employee->id,
-        'phone'           => 'required|string|max:20',
-    ]);
+        $request->validate([
+            'name'            => 'required|string|max:255',
+            'email'           => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password'        => 'nullable|string|min:8',
+            'department_id'   => 'required|exists:departments,id',
+            'employee_code'   => 'required|string|max:50|unique:employees,employee_code,' . $employee->id,
+            'phone'           => 'required|string|max:20',
+            'role'            => 'required|exists:roles,id',
+            'permissions'     => 'nullable|array',
+            'permissions.*'   => 'exists:permissions,id',
+        ]);
 
-    // تحديث بيانات جدول الـ users
-    $user->name = $request->name;
-    $user->email = $request->email;
-    if ($request->filled('password')) {
-        $user->password = Hash::make($request->password); // يتغير فقط لو كتب المستخدم باسورد جديد
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+
+        $employee->department_id = $request->department_id;
+        $employee->employee_code = $request->employee_code;
+        $employee->phone = $request->phone;
+        $employee->save();
+
+        $user->roles()->sync([$request->role]);
+
+        if ($request->has('permissions')) {
+            $user->permissions()->sync($request->permissions);
+        } else {
+            $user->permissions()->detach();
+        }
+
+        app(EventBusService::class)->dispatch('employee.updated', [
+            'employee_id' => $employee->id,
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'department_id' => $request->department_id,
+        ]);
+
+        return redirect()->route('employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح!');
     }
-    $user->save();
 
-    // تحديث بيانات جدول الـ employees
-    $employee->department_id = $request->department_id;
-    $employee->employee_code = $request->employee_code;
-    $employee->phone = $request->phone;
-    $employee->save();
-
-    return redirect()->route('employees.index')->with('success', 'تم تحديث بيانات الموظف بنجاح!');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $employee = Employee::findOrFail($id);
-    $user = $employee->user;
+        $user = $employee->user;
+        $employeeId = $employee->id;
+        $userId = $user->id;
+        $employee->delete();
+        if ($user) {
+            $user->delete();
+        }
 
-    // حذف الموظف أولاً ثم حساب المستخدم الخاص به
-    $employee->delete();
-    if ($user) {
-        $user->delete();
-    }
+        app(EventBusService::class)->dispatch('employee.deleted', [
+            'employee_id' => $employeeId,
+            'user_id' => $userId,
+        ]);
 
-    return redirect()->route('employees.index')->with('success', 'تم حذف حساب الموظف بالكامل من النظام!');
+        return redirect()->route('employees.index')->with('success', 'تم حذف حساب الموظف بالكامل من النظام!');
     }
 }

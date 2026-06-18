@@ -1,0 +1,188 @@
+{
+  "info": {
+    "name": "UIMP Core Platform API",
+    "description": "الوثيقة الرسمية لواجهات برمجة التطبيقات (API) للنظام المركزي لمنصة الإدارة الجامعية المتكاملة (UIMP).\n\n## المصادقة\n- X-API-Key: مفتاح API خاص بكل نظام فرعي (في ترويسة الطلب)\n- Bearer Token: توكن Sanctum يتم إصداره عبر /api/auth/token\n\n## Rate Limiting\n- الطلبات العامة: 10 محاولات في الدقيقة\n- تسجيل الأنظمة الفرعية: 5 محاولات في الدقيقة\n- الطلبات المحمية: 60 محاولة في الدقيقة",
+    "scheme": "https",
+    "host": "{{base_url}}",
+    "basePath": "/api",
+    "_exporter_id": "uimp-core"
+  },
+  "variable": [
+    { "key": "base_url", "value": "localhost", "type": "string" },
+    { "key": "api_key", "value": "YOUR_API_KEY_HERE", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "الصحة (Health)",
+      "item": [
+        {
+          "name": "فحص حالة النظام",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/health",
+            "header": [],
+            "description": "التحقق من أن النظام المركزي قيد التشغيل."
+          }
+        }
+      ]
+    },
+    {
+      "name": "المصادقة (Authentication)",
+      "item": [
+        {
+          "name": "إصدار توكن",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/auth/token",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{api_key}}\",\n  \"email\": \"admin@uimp.edu\",\n  \"password\": \"password\"\n}"
+            },
+            "description": "إصدار توكن Sanctum للوصول إلى API المحمية. يتطلب مفتاح API صالح + بريد إلكتروني وكلمة مرور مستخدم."
+          }
+        },
+        {
+          "name": "التحقق من التوكن",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/auth/verify",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "التحقق من صحة التوكن الحالي."
+          }
+        }
+      ]
+    },
+    {
+      "name": "المستخدمون (Users)",
+      "item": [
+        {
+          "name": "قائمة المستخدمين",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/users?role=student&search=ahmed&per_page=20",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "جلب قائمة المستخدمين مع إمكانية التصفية حسب الدور (role) والبحث (search)."
+          }
+        },
+        {
+          "name": "عرض مستخدم",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/users/1",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "عرض بيانات مستخدم معين مع ملفه الشخصي."
+          }
+        },
+        {
+          "name": "قائمة الطلاب",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/students?department_id=1&academic_year=3&per_page=50",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "جلب قائمة الطلاب مع إمكانية التصفية حسب القسم والسنة الدراسية."
+          }
+        },
+        {
+          "name": "قائمة الموظفين",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/employees?department_id=1",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "جلب قائمة الموظفين والأكاديميين."
+          }
+        }
+      ]
+    },
+    {
+      "name": "القاعات والمباني (Rooms & Buildings)",
+      "item": [
+        {
+          "name": "قائمة القاعات",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/rooms?building_id=1&type=lab&is_lab=true&min_capacity=20&per_page=50",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "جلب قائمة القاعات مع تصفية حسب المبنى والنوع والحد الأدنى للسعة."
+          }
+        },
+        {
+          "name": "عرض قاعة",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/rooms/1",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "عرض بيانات قاعة معينة."
+          }
+        },
+        {
+          "name": "قائمة المباني",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/buildings",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "جلب قائمة المباني مع عدد القاعات في كل مبنى."
+          }
+        },
+        {
+          "name": "قائمة المعامل",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/laboratories?department_id=1&is_active=true&per_page=50",
+            "header": [
+              { "key": "X-API-Key", "value": "{{api_key}}" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "جلب قائمة المعامل مع تصفية حسب القسم والحالة."
+          }
+        }
+      ]
+    },
+    {
+      "name": "الأنظمة الفرعية (Subsystems)",
+      "item": [
+        {
+          "name": "تسجيل نظام فرعي",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/subsystems/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"نظام إدارة المعامل\",\n  \"slug\": \"lab-management\",\n  \"description\": \"نظام حجز وإدارة المعامل\",\n  \"contact_email\": \"lab@uimp.edu\",\n  \"webhook_url\": \"https://lab-system.example.com/api/webhook\"\n}"
+            },
+            "description": "تسجيل نظام فرعي جديد في النظام المركزي. يتم إرجاع مفتاح API خاص يستخدم للمصادقة."
+          }
+        }
+      ]
+    }
+  ]
+}

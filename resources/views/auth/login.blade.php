@@ -2,36 +2,57 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل الدخول - نظام الجامعة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - النظام المركزي UIMP</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.08); width: 100%; max-width: 400px; background: #fff; }
+        .login-header { background: #fff; color: #1a2a3a; padding: 2.5rem 1.5rem 1rem; text-align: center; border-bottom: 3px solid #1a73e8; }
+        .login-header .icon { width: 56px; height: 56px; background: #e8f0fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+        .login-header h4 { font-weight: 700; margin-bottom: 4px; }
+        .login-header small { color: #5f6368; }
+        .login-body { padding: 1.5rem 2rem 2rem; background: #fff; }
+        .form-control { border-radius: 8px; border: 1.5px solid #e0e0e0; padding: 10px 14px; font-size: 0.95rem; }
+        .form-control:focus { border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,0.12); }
+        .btn-login { background: #1a73e8; border: none; border-radius: 8px; padding: 10px; font-weight: 700; font-size: 1rem; color: #fff; width: 100%; }
+        .btn-login:hover { background: #1557b0; }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4>تسجيل الدخول</h4>
-                    </div>
-                    <div class="card-body">
-                        @if($errors->any())
-                            <div class="alert alert-danger">{{ $errors->first() }}</div>
-                        @endif
-                        <form action="{{ route('login.submit') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label class="form-label">البريد الإلكتروني</label>
-                                <input type="email" name="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">كلمة المرور</label>
-                                <input type="password" name="password" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">دخول</button>
-                        </form>
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2">
+                    <path d="M12 2L2 7v10l10 5 10-5V7l-10-5z"/><path d="M2 7l10 5 10-5"/><path d="M12 22V12"/>
+                </svg>
+            </div>
+            <h4>النظام المركزي للجامعة</h4>
+            <small>UIMP Core Platform</small>
+        </div>
+        <div class="login-body">
+            @if($errors->any())
+                <div class="alert alert-danger text-center py-2 small">{{ $errors->first() }}</div>
+            @endif
+            <form action="{{ route('login.submit') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-muted">البريد الإلكتروني</label>
+                    <input type="email" name="email" class="form-control" required autofocus>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small text-muted">كلمة المرور</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                        <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                        <label class="form-check-label small" for="remember">تذكرني</label>
                     </div>
                 </div>
-            </div>
+                <button type="submit" class="btn-login">دخول</button>
+            </form>
         </div>
     </div>
 </body>

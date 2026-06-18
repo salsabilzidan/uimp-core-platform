@@ -12,18 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('students', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained()->onDelete('cascade'); // ربطه بحسابه
-    $table->foreignId('department_id')->constrained()->onDelete('cascade'); // القسم الدراسي
-    $table->string('student_code')->unique(); // الرقم الدراسي/القيد
-    $table->integer('academic_year'); // السنة الدراسية
-    $table->timestamps();
-});
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->string('student_code')->unique();
+            $table->integer('academic_year');
+            $table->softDeletes();
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('students');
