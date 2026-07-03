@@ -14,14 +14,11 @@
         <div class="col-md-6">
             <p><strong>الجدول:</strong> <code>{{ $log->table_name }}</code></p>
             <p><strong>النظام الفرعي:</strong> {{ $log->subsystem_slug ?? '—' }}</p>
-            <p><strong>عنوان IP:</strong> {{ $log->ip_address ?? '—' }}</p>
-            <p><strong>المتصفح:</strong> <span class="small">{{ $log->user_agent ?? '—' }}</span></p>
+         
         </div>
     </div>
     @if($log->details)
-        <hr>
-        <h6 class="fw-bold">التفاصيل:</h6>
-        <pre class="bg-light p-3 rounded" style="max-height: 300px; overflow: auto; direction: ltr; text-align: left;">{{ json_encode(json_decode($log->details), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+      
     @endif
     <a href="{{ route('audit-logs.index') }}" class="btn btn-secondary fw-bold px-4 mt-3">عودة</a>
 </div>

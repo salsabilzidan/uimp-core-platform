@@ -24,7 +24,7 @@ class DashboardController extends Controller
         $recentLogs = AuditLog::latest()->take(10)->get();
         
         // تعديل العمود ليتوافق مع الـ ERD الخاص بكم (status = 'active') بدلاً من is_active
-        $activeSubsystems = Subsystem::where('status', 'active')->get();
+        $activeSubsystems = Subsystem::where('is_active', true)->get();
 
         return view('dashboard', compact(
             'collegesCount', 'departmentsCount', 'employeesCount',

@@ -11,7 +11,7 @@
         </div>
         <div class="col-md-6">
             <p><strong>الاسم (إنجليزي):</strong> {{ $faculty->name_en }}</p>
-            <p><strong>تاريخ التسجيل:</strong> {{ $faculty->created_at->format('Y-m-d') }}</p>
+         <p><strong>تاريخ التسجيل:</strong> {{ $faculty->created_at ? $faculty->created_at->format('Y-m-d') : 'غير متوفر' }}</p>
         </div>
     </div>
     <a href="{{ route('faculties.index') }}" class="btn btn-secondary fw-bold px-4 mt-3">عودة</a>
