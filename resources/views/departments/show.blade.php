@@ -12,7 +12,9 @@
         </div>
         <div class="col-md-6">
             <p><strong>الكلية:</strong> {{ $department->faculty->name_ar ?? '—' }}</p>
-            <p><strong>تاريخ التسجيل:</strong> {{ $department->created_at->format('Y-m-d') }}</p>
+           <p><strong>تاريخ التسجيل:</strong>
+    {{ $department->created_at ? $department->created_at->format('Y-m-d') : 'غير متوفر' }}
+</p>
         </div>
     </div>
     <a href="{{ route('departments.index') }}" class="btn btn-secondary fw-bold px-4 mt-3">عودة</a>
