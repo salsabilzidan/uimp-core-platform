@@ -31,7 +31,10 @@ Route::middleware('guest')->group(function () {
 // [2] مسار تسجيل الخروج (يجب أن يكون متاحاً دائماً للمسجلين)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// [3] المسارات المحمية أمنياً (مستحيل دخولها بدون تسجيل دخول فعلي ومؤكد)
+// [3] مسار توثيق API (للمسؤول فقط)
+Route::get('/api-docs', function () { return view('api-docs'); })->name('api.docs')->middleware('role:sys_admin');
+
+// [4] المسارات المحمية أمنياً (مستحيل دخولها بدون تسجيل دخول فعلي ومؤكد)
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // لوحة التحكم الرئيسية
@@ -43,9 +46,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
     });
-
-    // ===== API Documentation =====
-    Route::get('/api-docs', function () { return view('api-docs'); })->name('api.docs');
 
     // ===== Faculties =====
     Route::get('/faculties', [FacultyController::class, 'index'])->name('faculties.index')->middleware('permission:faculties.view');

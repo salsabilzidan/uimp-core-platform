@@ -94,9 +94,11 @@
         <a href="{{ route('subsystems.index') }}" class="nav-link {{ request()->routeIs('subsystems.*') ? 'active' : '' }}">
             <i class="bi bi-plugin"></i> الأنظمة الفرعية
         </a>
+        @if(Auth::user()->hasRole('sys_admin'))
         <a href="{{ route('api.docs') }}" class="nav-link {{ request()->routeIs('api.docs') ? 'active' : '' }}">
             <i class="bi bi-book"></i> توثيق API
         </a>
+        @endif
         @if(Auth::user()->hasPermissionTo('audit-logs.view'))
         <a href="{{ route('audit-logs.index') }}" class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
             <i class="bi bi-journal-text"></i> سجل التدقيق
