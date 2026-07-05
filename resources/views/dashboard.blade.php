@@ -67,6 +67,7 @@
 </div>
 
 <div class="row g-3 mt-2">
+    @if(Auth::user()->hasRole('sys_admin'))
     <div class="col-md-6">
         <div class="card card-custom p-3">
             <h6 class="fw-bold mb-3" style="color: #1a2a3a;"><i class="bi bi-plugin"></i> الأنظمة الفرعية النشطة</h6>
@@ -84,6 +85,8 @@
             @endif
         </div>
     </div>
+    @endif
+    @if(Auth::user()->hasRole('sys_admin'))
     <div class="col-md-6">
         <div class="card card-custom p-3">
             <h6 class="fw-bold mb-3" style="color: #1a2a3a;"><i class="bi bi-journal-text"></i> آخر العمليات</h6>
@@ -100,6 +103,7 @@
                         @endforeach
                     </table>
                 </div>
+                @endif
             @else
                 <p class="text-muted small mb-0">لا توجد عمليات حديثة</p>
             @endif
