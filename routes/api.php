@@ -24,8 +24,7 @@ Route::post('/subsystems/register', [ApiSubsystemController::class, 'register'])
 Route::get('/health', [ApiSubsystemController::class, 'health'])->middleware('throttle:api');
 
 // Protected API endpoints (require API Key + Sanctum token)
-Route::middleware(['auth:sanctum', 'throttle:subsystems'])->group(function () {
-    Route::get('/auth/verify', [ApiAuthController::class, 'verifyToken']);
+Route::middleware(['subsystem.auth', 'throttle:subsystems'])->group(function () {    Route::get('/auth/verify', [ApiAuthController::class, 'verifyToken']);
 
     // User management for subsystems
     Route::get('/users', [ApiUserController::class, 'index'])->middleware('subsystem.scope:users.read');

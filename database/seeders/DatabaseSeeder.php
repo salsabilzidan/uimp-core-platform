@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Hash;
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
-    {
+    {$this->call([
+    SubsystemSeeder::class,
+]);
         // 1. الأدوار
         $roles = [
             ['name' => 'sys_admin', 'display_name_ar' => 'مسؤول النظام', 'display_name_en' => 'System Admin'],
