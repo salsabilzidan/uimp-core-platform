@@ -1,3 +1,8 @@
+## ملاحظة حول أسماء المساهمين (Contributors)
+
+بعض الـ commits تظهر باسم "your name" بدل الاسم الحقيقي، 
+وهذا بسبب أن إعدادات Git (git config) لم تُضبط بشكل صحيح 
+على جهاز المساهم. هذه الـ commits تعود لـ: شيماء ابوكيل.
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
